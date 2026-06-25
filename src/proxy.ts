@@ -5,7 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 // Các trang cho phép truy cập tự do không cần đăng nhập
 const PUBLIC_PATHS = ['/login', '/signup', '/api/webhook'];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // 1. Cho phép các đường dẫn public đi qua
