@@ -25,7 +25,7 @@ export async function POST(req: Request) {
         });
 
         // 🔥 CÁCH VIẾT MỚI: Dùng trực tiếp hàm tích hợp sẵn của object result
-        return result.toDataStreamResponse();
+        return result.toTextStreamResponse();
 
     } catch (error) {
         console.error('Gemini API Error:', error);
