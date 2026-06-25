@@ -1,5 +1,5 @@
 import { google } from '@ai-sdk/google';
-import { streamText, StreamingTextResponse } from 'ai';
+import { streamText } from 'ai';
 
 // Cấu hình Edge Runtime để tối ưu tốc độ streaming chữ đổ về
 export const runtime = 'edge';
@@ -24,8 +24,8 @@ export async function POST(req: Request) {
             prompt: body,
         });
 
-        // 🔥 ĐÃ SỬA: Sử dụng StreamingTextResponse truyền thống, tương thích hoàn toàn với bản SDK cũ của bạn
-        return new StreamingTextResponse(result.textStream);
+        // 🔥 CÁCH VIẾT MỚI: Dùng trực tiếp hàm tích hợp sẵn của object result
+        return result.toDataStreamResponse();
 
     } catch (error) {
         console.error('Gemini API Error:', error);
