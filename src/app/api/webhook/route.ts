@@ -7,21 +7,32 @@ import { retrieveContext } from '@/lib/rag';
 // ============================================
 // GET /api/webhook — Webhook verification handshake
 // ============================================
-export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
-  const mode = searchParams.get('hub.mode');
-  const token = searchParams.get('hub.verify_token');
-  const challenge = searchParams.get('hub.challenge');
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
 
-  if (mode === 'subscribe' && token === process.env.WHATSAPP_VERIFY_TOKEN) {
-    console.log('✅ Webhook verified successfully');
-    return new NextResponse(challenge, { status: 200 });
+    // Lấy các tham số Meta gửi lên
+    const mode = searchParams.get('hub.mode');
+    const token = searchParams.get('hub.verify_token');
+    const challenge = searchParams.get('hub.challenge');
+
+    // Lấy mật khẩu từ biến môi trường Vercel
+    const verifyToken = process.env.WHATSAPP_VERIFY_TOKEN;
+
+    // Kiểm tra tính hợp lệ
+    if (mode === 'subscribe' && token === verifyToken) {
+      console.log('Webhook verified successfully!');
+      // Quan trọng: Phải trả về đúng biến challenge dưới dạng Text, status 200
+      return new NextResponse(challenge, { status: 200 });
+    } else {
+      console.error('Webhook verification failed. Token mismatch.');
+      return new NextResponse('Forbidden', { status: 403 });
+    }
+  } catch (error) {
+    console.error('Error verifying webhook:', error);
+    return new NextResponse('Internal Server Error', { status: 500 });
   }
-
-  console.warn('❌ Webhook verification failed');
-  return NextResponse.json({ error: 'Verification failed' }, { status: 403 });
 }
-
 // ============================================
 // POST /api/webhook — Incoming message handler
 // ============================================
